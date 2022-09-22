@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -23,13 +24,18 @@ public class MemberService {
      */
     @Transactional(readOnly = true)
     public List<MemberDTO> findAllList() {
-        List<MemberDTO> memberDTOList = new ArrayList<>();
+//        List<MemberDTO> memberDTOList = new ArrayList<>();    // foreach 사용할 경우 사용
         List<MemberEntity> memberEntityList = memberRepository.findAll();
-
-        for (MemberEntity member: memberEntityList) {
-            memberDTOList.add(MemberDTO.fromEntity(member));
-        }
-        return memberDTOList;
+        
+        // 아래 둘 중 아무 방법 사용
+//        for (MemberEntity memberEntity : memberEntityList) {
+//            MemberDTO.fromEntity(memberEntity);
+//        }
+        
+        List<MemberDTO> result = memberEntityList.stream()
+                .map(m -> MemberDTO.fromEntity(m))
+                .collect(Collectors.toList());
+        return result;
     }
 
     /**
